@@ -20,7 +20,7 @@ android {
 
 dependencies {
     // Google's GCM.
-    compile "com.google.firebase:firebase-messaging:+"
+    compile "com.google.firebase:firebase-messaging:11.4.2"
 
     compile 'com.facebook.react:react-native:+'
 
