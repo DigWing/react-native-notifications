@@ -150,22 +150,33 @@ public class PushNotification implements IPushNotification {
 
     protected Notification.Builder getNotificationBuilder(PendingIntent intent) {
         Log.d("NOTIFICATIONS", "getNotificationBuilder");
-        Notification.Builder mBuilder = new Notification.Builder(mContext)
+        Notification.Builder mBuilder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID =getChanelIdFromManifest();// The id of the channel.
+            CharSequence name = getChanelNameFromManifest();// The user-visible name of the channel.
+            
+            mBuilder = new Notification.Builder(mContext, CHANNEL_ID)
                 .setContentTitle(mNotificationProps.getTitle())
                 .setContentText(mNotificationProps.getBody())
                 .setSmallIcon(mContext.getApplicationInfo().icon)
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setAutoCancel(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String CHANNEL_ID =getChanelIdFromManifest();// The id of the channel.
-            CharSequence name = getChanelNameFromManifest();// The user-visible name of the channel.
+            
             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
             mBuilder.setChannelId(CHANNEL_ID);
             NotificationManager mNotificationManager =
                     (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.createNotificationChannel(mChannel);
+        } else {
+            mBuilder = new Notification.Builder(mContext)
+                .setContentTitle(mNotificationProps.getTitle())
+                .setContentText(mNotificationProps.getBody())
+                .setSmallIcon(mContext.getApplicationInfo().icon)
+                .setContentIntent(intent)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true);
         }
         return addActionsToBuilder(mBuilder, mNotificationProps.asBundle());
     }
